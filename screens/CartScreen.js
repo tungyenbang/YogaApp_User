@@ -33,7 +33,27 @@ export default function CartScreen({ navigation }) {
     });
   }, []);
   
-
+  const groupByItem = (items) => {
+    const grouped = [];
+    const itemMap = new Map();
+  
+    items.forEach((item) => {
+      const itemKey = item.classId; // Sử dụng classId làm khóa để nhóm các lớp học
+  
+      if (itemMap.has(itemKey)) {
+        const existingItem = itemMap.get(itemKey);
+        existingItem.quantity += 1;
+        existingItem.keys.push(item.key);
+      } else {
+        const newItem = { ...item, quantity: 1, keys: [item.key] };
+        grouped.push(newItem);
+        itemMap.set(itemKey, newItem);
+      }
+    });
+  
+    return grouped;
+  };
+  
   
   
   
