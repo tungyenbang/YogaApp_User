@@ -48,21 +48,6 @@ export default function DetailsClassScreen({ route, navigation }) {
   const handleBuy = async () => {
     if (classDetails && courseDetails) {
       try {
-        console.log("Checking cart items for classId:", classId);
-        const cartRef = query(ref(database, "cart"), orderByChild("classId"), equalTo(classId));
-        const cartSnapshot = await get(cartRef);
-        
-        let purchasedCount = 0;
-        cartSnapshot.forEach(() => {
-          purchasedCount++;
-        });
-        
-
-        if (purchasedCount >= parseInt(courseDetails.capacity)) {
-          Alert.alert("Error", "Khóa học này đã full thành viên.");
-          return;
-        }
-  
         const cartItem = {
           classId: classId,
           teacher: classDetails.teacher,
