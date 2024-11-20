@@ -9,7 +9,7 @@ export default function HomeScreen({ navigation }) {
   const [displayedClasses, setDisplayedClasses] = useState([]);
   const [itemsToShow, setItemsToShow] = useState(5);
   const [showAllClasses, setShowAllClasses] = useState(false);
-
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
 
   useEffect(() => {
@@ -22,11 +22,44 @@ export default function HomeScreen({ navigation }) {
     });
   }, [itemsToShow]);
 
-  
+  useEffect(() => {
+    // Tạo setInterval để thay đổi hình ảnh sau mỗi 3 giây
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % yogaImages.length); // Lặp lại qua các hình ảnh
+    }, 3000); // 3 giây
+
+    return () => clearInterval(interval); // Dọn dẹp interval khi component bị tháo gỡ
+  }, []);
+
+  const toggleShowAll = () => {
+    if (showAllClasses) {
+      setDisplayedClasses(classes.slice(0, 5));
+      setShowAllClasses(false);
+    } else {
+      setDisplayedClasses(classes);
+      setShowAllClasses(true);
+    }
+  };
+  const yogaImages = [
+    { id: '1', uri: 'https://images.pexels.com/photos/3822356/pexels-photo-3822356.jpeg?auto=compress&cs=tinysrgb&w=600' },
+    { id: '2', uri: 'https://images.pexels.com/photos/3822140/pexels-photo-3822140.jpeg?auto=compress&cs=tinysrgb&w=600' },
+    { id: '3', uri: 'https://images.pexels.com/photos/3822861/pexels-photo-3822861.jpeg?auto=compress&cs=tinysrgb&w=600' },
+  ];
   
   return (
     <View style={styles.container}>
-      
+      <View style={styles.imageContainer}>
+        <FlatList
+          data={[yogaImages[currentImageIndex]]} // Hiển thị hình ảnh hiện tại
+          horizontal
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <Image source={{ uri: item.uri }} style={styles.image} />
+          )}
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled
+        />
+      </View>
       <FlatList
         data={displayedClasses}
         keyExtractor={(item) => item.id}
@@ -41,7 +74,7 @@ export default function HomeScreen({ navigation }) {
         )}
         ListFooterComponent={() =>
           classes.length > 5 ? (
-            <TouchableOpacity  style={styles.loadMoreButton}>
+            <TouchableOpacity onPress={toggleShowAll} style={styles.loadMoreButton}>
               <Text style={styles.loadMoreText}>{showAllClasses ? "Back" : "Load More"}</Text>
             </TouchableOpacity>
           ) : null
@@ -56,7 +89,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  
+  image: {
+    width: 340,
+    height: 170, 
+    margin: 10,
+    borderRadius: 20,
+  },
+  imageContainer: {
+    height: 180, // Điều chỉnh chiều cao cho FlatList của hình ảnh
+    marginBottom: 10, // Khoảng cách giữa ảnh và danh sách lớp học
+  },
   classItem: {
     borderWidth: 1,
     borderColor: "#ccc",
